@@ -1,27 +1,49 @@
+* {
+    box-sizing: border-box;
+    font-family: system-ui, sans-serif;
+}
+
 body {
-    background-color: #f4f6f9;
+    margin: 0;
+    background: #f3f5f9;
 }
 
 /* =====================
-   TOP BAR
+ TOP BAR
 ===================== */
 
 .top-bar {
-    background: white;
-    padding: 15px;
-    border-radius: 10px;
+    background: #111827;
+    padding: 15px 30px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
 }
 
-.search-input {
-    width: 50%;
+.top-bar input {
+    width: 40%;
+    padding: 8px;
+    border-radius: 6px;
+    border: none;
+}
+
+.top-bar .btn {
+    text-decoration: none;
 }
 
 /* =====================
-   SIDEBAR
+ LAYOUT
+===================== */
+
+.layout {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 20px;
+    padding: 20px;
+}
+
+/* =====================
+ SIDEBAR
 ===================== */
 
 .sidebar {
@@ -30,33 +52,109 @@ body {
     border-radius: 10px;
 }
 
-/* =====================
-   TABLE
-===================== */
-
-table img {
-    width: 60px;
-    border-radius: 5px;
+.sidebar select {
+    width: 100%;
+    margin-bottom: 15px;
 }
 
 /* =====================
-   PAGINATION
+ CONTENT
+===================== */
+
+.content {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+/* =====================
+ TABLE
+===================== */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead {
+    background: #1f2933;
+    color: white;
+}
+
+th, td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+img {
+    width: 60px;
+    border-radius: 6px;
+}
+
+/* =====================
+ BUTTONS
+===================== */
+
+.btn {
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: none;
+    background: #e5e7eb;
+    cursor: pointer;
+}
+
+.btn:hover {
+    opacity: 0.85;
+}
+
+.primary {
+    background: #22c55e;
+    color: white;
+}
+
+.danger {
+    background: #ef4444;
+    color: white;
+}
+
+.warning {
+    background: #f59e0b;
+    color: white;
+}
+
+/* =====================
+ PAGINATION
 ===================== */
 
 .pagination-bar {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    margin-top: 15px;
 }
 
 /* =====================
-   FORM
+ FORM
 ===================== */
 
-.card {
-    border-radius: 12px;
+.form-container {
+    max-width: 500px;
+    margin: 80px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
 }
 
-.card-header h4 {
-    margin: 0;
+label {
+    display: block;
+    margin-bottom: 15px;
+}
+
+input {
+    width: 100%;
+    padding: 8px;
+}
+
+.form-actions {
+    display: flex;
+    gap: 10px;
 }

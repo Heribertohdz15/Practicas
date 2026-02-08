@@ -14,7 +14,7 @@ productForm.addEventListener("submit", async e => {
         body: JSON.stringify(producto)
     });
 
-    alert("Producto creado correctamente (simulado)");
+    alert("Producto creado (simulado)");
 
     window.location.href = "index.html";
 });

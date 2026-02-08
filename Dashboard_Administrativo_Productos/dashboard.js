@@ -1,43 +1,60 @@
 const BASE_URL = "https://dummyjson.com/products";
 
-let skip = 0;
-const limit = 10;
-let total = 0;
-
-let filtros = {
+const state = {
+    skip: 0,
+    limit: 10,
+    total: 0,
     busqueda: "",
     categoria: "",
     ordenar: null
 };
 
+function buildURL() {
+
+    let url = BASE_URL;
+
+    if (state.busqueda) {
+        url += `/search?q=${encodeURIComponent(state.busqueda)}`;
+    }
+    else if (state.categoria) {
+        url += `/category/${state.categoria}`;
+    }
+
+    url += `?limit=${state.limit}&skip=${state.skip}`;
+
+    if (state.ordenar) {
+        url += `&sortBy=${state.ordenar.campo}&order=${state.ordenar.tipo}`;
+    }
+
+    return url;
+}
+
 async function cargarProductos() {
 
-    let url = `${BASE_URL}?limit=${limit}&skip=${skip}`;
+    try {
 
-    if (filtros.busqueda) {
-        url = `${BASE_URL}/search?q=${filtros.busqueda}`;
+        const res = await fetch(buildURL());
+        const data = await res.json();
+
+        state.total = data.total;
+
+        renderizarTabla(data.products);
+        actualizarPaginacion();
+
+    } catch {
+        alert("Error al cargar productos");
     }
-
-    if (filtros.categoria) {
-        url = `${BASE_URL}/category/${filtros.categoria}`;
-    }
-
-    if (filtros.ordenar) {
-        url += `&sortBy=${filtros.ordenar.campo}&order=${filtros.ordenar.tipo}`;
-    }
-
-    const res = await fetch(url);
-    const data = await res.json();
-
-    total = data.total;
-
-    renderizarTabla(data.products);
-    actualizarPaginacion();
 }
 
 function renderizarTabla(productos) {
 
     productTable.innerHTML = "";
+
+    if (!productos.length) {
+        productTable.innerHTML = `
+            <tr><td colspan="6">Sin resultados</td></tr>`;
+        return;
+    }
 
     productos.forEach(p => {
 
@@ -50,10 +67,12 @@ function renderizarTabla(productos) {
             <td>$${p.price}</td>
             <td>${p.category}</td>
             <td>
-                <button class="btn btn-warning btn-sm"
-                    onclick="editarProducto(${p.id})">Editar</button>
-                <button class="btn btn-danger btn-sm"
-                    onclick="eliminarProducto(${p.id})">Eliminar</button>
+                <button class="btn warning" onclick="editarProducto(${p.id})">
+                    Editar
+                </button>
+                <button class="btn danger" onclick="eliminarProducto(${p.id})">
+                    Eliminar
+                </button>
             </td>
         `;
 
@@ -63,56 +82,56 @@ function renderizarTabla(productos) {
 
 function actualizarPaginacion() {
 
-    const paginaActual = Math.floor(skip / limit) + 1;
-    const totalPaginas = Math.ceil(total / limit);
+    const pagina = Math.floor(state.skip / state.limit) + 1;
+    const totalPaginas = Math.ceil(state.total / state.limit);
 
-    pageInfo.textContent = `Página ${paginaActual} de ${totalPaginas}`;
+    pageInfo.textContent = `Página ${pagina} de ${totalPaginas}`;
 
-    prevBtn.disabled = skip === 0;
-    nextBtn.disabled = skip + limit >= total;
+    prevBtn.disabled = state.skip === 0;
+    nextBtn.disabled = state.skip + state.limit >= state.total;
 }
 
-/* EVENTOS */
+/* ================= EVENTOS ================= */
 
 prevBtn.onclick = () => {
-    skip -= limit;
+    state.skip -= state.limit;
     cargarProductos();
 };
 
 nextBtn.onclick = () => {
-    skip += limit;
+    state.skip += state.limit;
     cargarProductos();
 };
 
-searchInput.addEventListener("keypress", e => {
+searchInput.addEventListener("keydown", e => {
     if (e.key === "Enter") {
-        filtros.busqueda = e.target.value;
-        filtros.categoria = "";
-        skip = 0;
+        state.busqueda = e.target.value.trim();
+        state.categoria = "";
+        state.skip = 0;
         cargarProductos();
     }
 });
 
-categorySelect.addEventListener("change", e => {
-    filtros.categoria = e.target.value;
-    filtros.busqueda = "";
-    skip = 0;
+categorySelect.onchange = e => {
+    state.categoria = e.target.value;
+    state.busqueda = "";
+    state.skip = 0;
     cargarProductos();
-});
+};
 
-sortSelect.addEventListener("change", e => {
+sortSelect.onchange = e => {
 
-    if (!e.target.value) filtros.ordenar = null;
+    if (!e.target.value) state.ordenar = null;
     else {
         const [campo, tipo] = e.target.value.split("-");
-        filtros.ordenar = { campo, tipo };
+        state.ordenar = { campo, tipo };
     }
 
-    skip = 0;
+    state.skip = 0;
     cargarProductos();
-});
+};
 
-/* CATEGORIAS */
+/* ================= CATEGORIAS ================= */
 
 async function cargarCategorias() {
 
@@ -127,22 +146,19 @@ async function cargarCategorias() {
     });
 }
 
-/* EDITAR */
+/* ================= EDITAR ================= */
 
 async function editarProducto(id) {
 
-    const nuevoTitulo = prompt("Nuevo título:");
-    const nuevoPrecio = prompt("Nuevo precio:");
+    const titulo = prompt("Nuevo título:");
+    const precio = prompt("Nuevo precio:");
 
-    if (!nuevoTitulo || !nuevoPrecio) return;
+    if (!titulo || !precio) return;
 
     await fetch(`${BASE_URL}/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            title: nuevoTitulo,
-            price: nuevoPrecio
-        })
+        body: JSON.stringify({ title: titulo, price: precio })
     });
 
     alert("Producto actualizado");
@@ -150,7 +166,7 @@ async function editarProducto(id) {
     cargarProductos();
 }
 
-/* ELIMINAR */
+/* ================= ELIMINAR ================= */
 
 async function eliminarProducto(id) {
 
@@ -164,6 +180,5 @@ async function eliminarProducto(id) {
 }
 
 /* INIT */
-
-cargarCategorias();
+cargarCategorias(); 
 cargarProductos();
