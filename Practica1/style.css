@@ -1,0 +1,38 @@
+body{
+    font-family: sans-serif;
+    padding: 25px;
+    background-color: #7f9c9a;
+}
+.tarjeta{
+    margin: 20px;
+    border: 2px;
+    border-style: solid;
+    border-radius: 20px;
+    padding: 15px;
+}
+.btn-volver {
+    background-color: #3e4d57;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+.btn-mostrar {
+    background-color: #406ea3;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 5px;
+}   

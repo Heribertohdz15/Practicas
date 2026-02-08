@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Mis Prácticas Web</title>
+
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #506947;
+            margin: 0;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 { 
+            color: #ffffff;
+        }
+
+        .contenedor {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            max-width: 900px;
+            margin: auto;
+        }
+
+        .card {
+            background: rgb(128, 158, 127);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card a {
+            text-decoration: none;
+            background: #35572c;
+            color: white;
+            padding: 8px 14px;
+            border-radius: 6px;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        .card a:hover {
+            background: #9fda8d;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Mis Prácticas de Desarrollo Web</h1>
+</header>
+
+<div class="contenedor">
+
+    <div class="card">
+        <h3>Práctica 1</h3>
+        <p>Formulario de productos</p>
+        <a href="practica1/index.html">Abrir</a>
+    </div>
+
+    <div class="card">
+        <h3>Práctica 2</h3>
+        <p>Lista de productos</p>
+        <a href="Practica_Leaflet_OpenStreetMap/index.html">Abrir</a>
+    </div>
+
+    <div class="card">
+        <h3>Práctica 3</h3>
+        <p>Api de Dragon ball Z</p>
+        <a href="PracticaDragonBall/index.html">Abrir</a>
+    </div>
+
+    <div class="card">
+        <h3>Práctica 4</h3>
+        <p>Integracion de Api propia</p>
+        <a href="Practica_integracionApiPropia/index.html">Abrir</a>
+    </div>
+
+    <div class="card">
+        <h3>Práctica 5</h3>
+        <p>Api de productos DumyJson</p>
+        <a href="Practica_En_Clase/home.html">Abrir</a>
+    </div>
+
+</div>
+
+</body>
+</html>
