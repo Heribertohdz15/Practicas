@@ -1,80 +1,82 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-<meta charset="UTF-8">
-<title>ShopMaster Admin</title>
 
-<link rel="stylesheet" href="style.css"> 
+<head>
+    <meta charset="UTF-8">
+    <title>Paginacion de Productos</title>
+
+    <link rel="stylesheet" href="style.css">
 
 </head>
+
 <body>
 
-<header class="top-bar">
+    <header class="top-bar">
 
-<input type="text" id="searchInput" placeholder="Buscar producto...">
+        <div class="search-box">
+            <input id="searchInput" type="text" placeholder="Buscar productos...">
+            <button id="searchBtn">Buscar</button>
+        </div>
+         <a href="add.html" class="btn primary">Nuevo Producto</a>
 
-<a href="add.html" class="btn primary">Nuevo Producto</a>
+    </header>
 
-</header>
+    <main class="layout">
 
-<main class="layout">
+        <aside class="sidebar">
 
-<!-- SIDEBAR -->
-<aside class="sidebar">
+            <h3>Filtros</h3>
 
-<h3>Filtros</h3>
+            <select id="categorySelect">
+                <option value="">Todas las categorías</option>
+            </select>
 
-<select id="categorySelect">
-<option value="">Todas las categorías</option>
-</select>
+            <h4>Ordenar</h4>
 
-<h4>Ordenar</h4>
+        <select id="sortSelect">
+            <option value="">Sin orden</option>
+            <option value="title-asc">Título-asc</option>
+            <option value="title-desc">Título-des</option>
+            <option value="price-asc">Precio-Mayor</option>
+            <option value="price-desc">Precio-Menor</option>
+        </select>
 
-<select id="sortSelect">
-<option value="">Sin orden</option>
-<option value="title-asc">Título ↑</option>
-<option value="title-desc">Título ↓</option>
-<option value="price-asc">Precio ↑</option>
-<option value="price-desc">Precio ↓</option>
-</select>
+        </aside>
 
-</aside>
+        <section class="content">
 
-<!-- CONTENIDO -->
-<section class="content">
+            <table>
 
-<table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Foto</th>
+                        <th>Título</th>
+                        <th>Precio</th>
+                        <th>Categoría</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
 
-<thead>
-<tr>
-<th>ID</th>
-<th>Foto</th>
-<th>Título</th>
-<th>Precio</th>
-<th>Categoría</th>
-<th>Acciones</th>
-</tr>
-</thead>
+                <tbody id="productTable"></tbody>
 
-<tbody id="productTable"></tbody>
+            </table>
 
-</table>
+            <footer class="pagination-bar">
 
-<footer class="pagination-bar">
+                <span id="pageInfo"></span>
 
-<span id="pageInfo"></span>
+                <div>
+                    <button id="prevBtn" class="btn">Anterior</button>
+                    <button id="nextBtn" class="btn">Siguiente</button>
+                </div>
 
-<div>
-<button id="prevBtn" class="btn">Anterior</button>
-<button id="nextBtn" class="btn">Siguiente</button>
-</div>
+            </footer>
 
-</footer>
+        </section>
 
-</section>
+    </main>
 
-</main>
-
-<script src="js/dashboard.js"></script>
+    <script src="dashboard.js" defer></script> 
 </body>
 </html>

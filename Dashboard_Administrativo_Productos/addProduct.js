@@ -15,6 +15,6 @@ productForm.addEventListener("submit", async e => {
     });
 
     alert("Producto creado (simulado)");
-
+    
     window.location.href = "index.html";
 });

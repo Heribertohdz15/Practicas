@@ -1,5 +1,17 @@
 const BASE_URL = "https://dummyjson.com/products";
 
+const productTable = document.getElementById("productTable");
+
+const prevBtn = document.getElementById("prevBtn");
+const nextBtn = document.getElementById("nextBtn");
+const pageInfo = document.getElementById("pageInfo");
+
+const searchInput = document.getElementById("searchInput");
+const searchBtn = document.getElementById("searchBtn");
+
+const categorySelect = document.getElementById("categorySelect");
+const sortSelect = document.getElementById("sortSelect");
+
 const state = {
     skip: 0,
     limit: 10,
@@ -11,22 +23,26 @@ const state = {
 
 function buildURL() {
 
-    let url = BASE_URL;
+    const params = new URLSearchParams({
+        limit: state.limit,
+        skip: state.skip
+    });
+
+    // Solo ordenar cuando NO hay búsqueda
+    if (state.ordenar && !state.busqueda) {
+        params.append("sortBy", state.ordenar.campo);
+        params.append("order", state.ordenar.tipo);
+    }
 
     if (state.busqueda) {
-        url += `/search?q=${encodeURIComponent(state.busqueda)}`;
-    }
-    else if (state.categoria) {
-        url += `/category/${state.categoria}`;
+        return `${BASE_URL}/search?q=${encodeURIComponent(state.busqueda)}&${params.toString()}`;
     }
 
-    url += `?limit=${state.limit}&skip=${state.skip}`;
-
-    if (state.ordenar) {
-        url += `&sortBy=${state.ordenar.campo}&order=${state.ordenar.tipo}`;
+    if (state.categoria) {
+        return `${BASE_URL}/category/${state.categoria}?${params.toString()}`;
     }
 
-    return url;
+    return `${BASE_URL}?${params.toString()}`;
 }
 
 async function cargarProductos() {
@@ -34,6 +50,8 @@ async function cargarProductos() {
     try {
 
         const res = await fetch(buildURL());
+        if (!res.ok) throw new Error("Error HTTP");
+
         const data = await res.json();
 
         state.total = data.total;
@@ -41,10 +59,23 @@ async function cargarProductos() {
         renderizarTabla(data.products);
         actualizarPaginacion();
 
-    } catch {
+    } catch (err) {
+        console.error(err);
         alert("Error al cargar productos");
     }
 }
+
+/* Buscar productos */
+function buscarProductos(texto) {
+
+    state.busqueda = texto;
+    state.categoria = "";
+    state.skip = 0;
+
+    cargarProductos();
+}
+
+/* TABLA */
 
 function renderizarTabla(productos) {
 
@@ -52,7 +83,9 @@ function renderizarTabla(productos) {
 
     if (!productos.length) {
         productTable.innerHTML = `
-            <tr><td colspan="6">Sin resultados</td></tr>`;
+            <tr>
+                <td colspan="6">Sin resultados</td>
+            </tr>`;
         return;
     }
 
@@ -62,7 +95,9 @@ function renderizarTabla(productos) {
 
         tr.innerHTML = `
             <td>${p.id}</td>
-            <td><img src="${p.thumbnail}"></td>
+            <td>
+                <img src="${p.thumbnail}" width="60">
+            </td>
             <td>${p.title}</td>
             <td>$${p.price}</td>
             <td>${p.category}</td>
@@ -80,6 +115,8 @@ function renderizarTabla(productos) {
     });
 }
 
+/*PAGINACION */
+
 function actualizarPaginacion() {
 
     const pagina = Math.floor(state.skip / state.limit) + 1;
@@ -91,7 +128,7 @@ function actualizarPaginacion() {
     nextBtn.disabled = state.skip + state.limit >= state.total;
 }
 
-/* ================= EVENTOS ================= */
+/*EVENTOS */
 
 prevBtn.onclick = () => {
     state.skip -= state.limit;
@@ -103,14 +140,17 @@ nextBtn.onclick = () => {
     cargarProductos();
 };
 
+/* ENTER en input */
 searchInput.addEventListener("keydown", e => {
     if (e.key === "Enter") {
-        state.busqueda = e.target.value.trim();
-        state.categoria = "";
-        state.skip = 0;
-        cargarProductos();
+        buscarProductos(e.target.value.trim());
     }
 });
+
+/* BOTON BUSCAR */
+searchBtn.onclick = () => {
+    buscarProductos(searchInput.value.trim());
+};
 
 categorySelect.onchange = e => {
     state.categoria = e.target.value;
@@ -121,8 +161,9 @@ categorySelect.onchange = e => {
 
 sortSelect.onchange = e => {
 
-    if (!e.target.value) state.ordenar = null;
-    else {
+    if (!e.target.value) {
+        state.ordenar = null;
+    } else {
         const [campo, tipo] = e.target.value.split("-");
         state.ordenar = { campo, tipo };
     }
@@ -131,22 +172,27 @@ sortSelect.onchange = e => {
     cargarProductos();
 };
 
-/* ================= CATEGORIAS ================= */
+/* CATEGORIAS */
 
 async function cargarCategorias() {
 
-    const res = await fetch(`${BASE_URL}/category-list`);
-    const data = await res.json();
+    try {
+        const res = await fetch(`${BASE_URL}/category-list`);
+        const data = await res.json();
 
-    data.forEach(cat => {
-        const option = document.createElement("option");
-        option.value = cat;
-        option.textContent = cat;
-        categorySelect.appendChild(option);
-    });
+        data.forEach(cat => {
+            const option = document.createElement("option");
+            option.value = cat;
+            option.textContent = cat;
+            categorySelect.appendChild(option);
+        });
+
+    } catch (err) {
+        console.error(err);
+    }
 }
 
-/* ================= EDITAR ================= */
+/* EDITAR */
 
 async function editarProducto(id) {
 
@@ -158,7 +204,10 @@ async function editarProducto(id) {
     await fetch(`${BASE_URL}/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: titulo, price: precio })
+        body: JSON.stringify({
+            title: titulo,
+            price: Number(precio)
+        })
     });
 
     alert("Producto actualizado");
@@ -166,13 +215,15 @@ async function editarProducto(id) {
     cargarProductos();
 }
 
-/* ================= ELIMINAR ================= */
+/* ELIMINAR */
 
 async function eliminarProducto(id) {
 
     if (!confirm("¿Eliminar este producto?")) return;
 
-    await fetch(`${BASE_URL}/${id}`, { method: "DELETE" });
+    await fetch(`${BASE_URL}/${id}`, {
+        method: "DELETE"
+    });
 
     alert("Producto eliminado");
 
@@ -180,5 +231,6 @@ async function eliminarProducto(id) {
 }
 
 /* INIT */
-cargarCategorias(); 
+
+cargarCategorias();
 cargarProductos();
